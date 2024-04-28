@@ -23,12 +23,12 @@ public class RouteConfigBackgroundService : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var nats = serviceProvider.GetRequiredService<NatsConnection>();
-        
+        var momusSettings = serviceProvider.GetRequiredService<MomusSettings>();
         var js = new NatsJSContext(nats);
         var kv = new NatsKVContext(js);
-        var store = await kv.CreateStoreAsync("momus", stoppingToken);
+        var store = await kv.CreateStoreAsync(momusSettings.StoreName, stoppingToken);
 
-        var initialValue = await store.GetEntryAsync<string>("route-config", cancellationToken: stoppingToken);
+        var initialValue = await store.GetEntryAsync<string>(momusSettings.KeyName, cancellationToken: stoppingToken);
         UpdateRouteConfig(initialValue.Value);
 
         var watchOpts = new NatsKVWatchOpts
@@ -38,7 +38,7 @@ public class RouteConfigBackgroundService : BackgroundService
         };
         
         // not sure if we want the store to blow up if the value is serialized incorrectly 
-        // opting to deserialize the value in method below for now
+        // opting to deserialize the value in the method below for now
         await foreach (var kvPair in store.WatchAsync<string>(opts: watchOpts ,cancellationToken: stoppingToken))
         {
             Log.Information("Key: {Key}, Value: {Value}", kvPair.Key, kvPair.Value);

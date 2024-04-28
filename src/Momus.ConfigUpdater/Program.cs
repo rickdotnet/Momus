@@ -1,6 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-using System.Text.Json;
+﻿using System.Text.Json;
 using NATS.Client.Core;
 using NATS.Client.JetStream;
 using NATS.Client.KeyValueStore;
@@ -20,7 +18,6 @@ var config = new RouteConfig
         new("RedirectWww", "true"), // default?
         new("UseOriginalHostHeader", "true")
     })
-    //.WithTransformRequestHeader("X-Forwarded-Proto", "https", false)
 };
 
 await using var nats = new NatsConnection();

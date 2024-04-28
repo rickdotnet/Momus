@@ -1,7 +1,9 @@
 ﻿namespace Momus.Config;
 
-public class MomusSettings
+public record MomusSettings
 {
+    public string StoreName { get; set; } = "momus";
+    public string KeyName { get; set; } = "route-config";
     public string NatsUrl { get; set; } = "nats://localhost:4222";
     public string? CredsFilePath { get; set; }
     public string? Jwt { get; set; }

@@ -1,4 +1,9 @@
 {
+  "StoreName": "momus",
+  "KeyName": "route-config",
   "NatsUrl": "nats://localhost:4222",
-  "CredsFilePath": ""
+  "CredsFilePath": "",
+  "Jwt": "",
+  "NKey": "",
+  "Token": ""
 }
