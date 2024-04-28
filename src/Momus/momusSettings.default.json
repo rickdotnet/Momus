@@ -1,0 +1,4 @@
+{
+  "NatsUrl": "nats://localhost:4222",
+  "CredsFilePath": ""
+}
