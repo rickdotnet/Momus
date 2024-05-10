@@ -28,8 +28,13 @@ public class RouteConfigBackgroundService : BackgroundService
         var kv = new NatsKVContext(js);
         var store = await kv.CreateStoreAsync(momusSettings.StoreName, stoppingToken);
 
-        var initialValue = await store.GetEntryAsync<string>(momusSettings.KeyName, cancellationToken: stoppingToken);
-        UpdateRouteConfig(initialValue.Value);
+
+        // this creates an empty key if it doesn't exist
+        // this keeps the watcher from blowing up
+        var initialValue = await GetInitialValue();
+
+        if (!string.IsNullOrEmpty(initialValue))
+            UpdateRouteConfig(initialValue);
 
         var watchOpts = new NatsKVWatchOpts
         {
@@ -39,12 +44,29 @@ public class RouteConfigBackgroundService : BackgroundService
         
         // not sure if we want the store to blow up if the value is serialized incorrectly 
         // opting to deserialize the value in the method below for now
-        await foreach (var kvPair in store.WatchAsync<string>(opts: watchOpts ,cancellationToken: stoppingToken))
+        await foreach (var kvPair in store.WatchAsync<string>(opts: watchOpts, cancellationToken: stoppingToken))
         {
             Log.Information("Key: {Key}, Value: {Value}", kvPair.Key, kvPair.Value);
             UpdateRouteConfig(kvPair.Value);
         }
-        
+
+        return;
+
+        async ValueTask<string> GetInitialValue()
+        {
+            try
+            {
+                var result = await store.GetEntryAsync<string>(momusSettings.KeyName, cancellationToken: stoppingToken);
+                return result.Value ?? string.Empty;
+            }
+            catch (Exception ex)
+            {
+                Log.Warning("Failed to get initial value");
+                Log.Warning("Creating empty key in store");
+                await store.CreateAsync(momusSettings.KeyName, "", cancellationToken: stoppingToken);
+                return string.Empty;
+            }
+        }
     }
 
     private void UpdateRouteConfig(string? payload)
@@ -60,7 +82,6 @@ public class RouteConfigBackgroundService : BackgroundService
 
         try
         {
-
             var config = JsonSerializer.Deserialize<YarpConfig>(payload);
             if (config is null)
             {
@@ -78,7 +99,7 @@ public class RouteConfigBackgroundService : BackgroundService
                 // uncomment this if it still isn't working
                 // route.WithTransformRequestHeader("X-Forwarded-Proto", "https", false);
             }
-            
+
             proxyConfigProvider.Update(config.Routes, config.Clusters);
         }
         catch (Exception ex)
