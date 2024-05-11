@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Yarp.ReverseProxy.Configuration;
 using Yarp.ReverseProxy.Transforms;
 
@@ -6,12 +7,12 @@ namespace Momus.Config;
 
 public static class YarpDefaults
 {
-    public static Task ProxyLog(HttpContext context, Func<Task> next)
+    public static Task ProxyLog(HttpContext context, Func<Task> next, ILogger logger)
     {
-        Log.Debug("Request Path: {Request}", context.Request.Path);
+        logger.LogDebug("Request Path: {Request}", context.Request.Path);
 
         var proxyFeature = context.GetReverseProxyFeature();
-        Log.Debug("Route ({Route}), Cluster ({Cluster}), Path ({Path}) ",
+        logger.LogDebug("Route ({Route}), Cluster ({Cluster}), Path ({Path}) ",
             proxyFeature.Route.Config.RouteId,
             proxyFeature.Route.Config.ClusterId,
             proxyFeature.Route.Config.Match.Path);

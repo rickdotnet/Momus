@@ -1,9 +1,12 @@
 ﻿using System.Text.Json;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Momus.Config;
 using NATS.Client.Core;
 using NATS.Client.JetStream;
 using NATS.Client.KeyValueStore;
-using Serilog;
 using Yarp.ReverseProxy.Configuration;
 using Yarp.ReverseProxy.Transforms;
 
@@ -13,11 +16,12 @@ public class RouteConfigBackgroundService : BackgroundService
 {
     private readonly IServiceProvider serviceProvider;
     private readonly InMemoryConfigProvider proxyConfigProvider;
-
+    private readonly ILogger logger;
     public RouteConfigBackgroundService(IServiceProvider serviceProvider)
     {
         this.serviceProvider = serviceProvider;
         this.proxyConfigProvider = serviceProvider.GetRequiredService<InMemoryConfigProvider>();
+        this.logger = serviceProvider.GetService<ILogger<RouteConfigBackgroundService>>() ?? NullLogger<RouteConfigBackgroundService>.Instance;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -46,7 +50,7 @@ public class RouteConfigBackgroundService : BackgroundService
         // opting to deserialize the value in the method below for now
         await foreach (var kvPair in store.WatchAsync<string>(opts: watchOpts, cancellationToken: stoppingToken))
         {
-            Log.Information("Key: {Key}, Value: {Value}", kvPair.Key, kvPair.Value);
+            logger.LogInformation("Key: {Key}, Value: {Value}", kvPair.Key, kvPair.Value);
             UpdateRouteConfig(kvPair.Value);
         }
 
@@ -61,8 +65,8 @@ public class RouteConfigBackgroundService : BackgroundService
             }
             catch (Exception ex)
             {
-                Log.Warning("Failed to get initial value");
-                Log.Warning("Creating empty key in store");
+                logger.LogWarning("Failed to get initial value");
+                logger.LogWarning("Creating empty key in store");
                 await store.CreateAsync(momusSettings.KeyName, "", cancellationToken: stoppingToken);
                 return string.Empty;
             }
@@ -73,19 +77,19 @@ public class RouteConfigBackgroundService : BackgroundService
     {
         if (payload is null)
         {
-            Log.Warning("Null payload? Someone is playing games with us");
+            logger.LogWarning("Null payload? Someone is playing games with us");
             return;
         }
 
         // start cooking
-        Log.Information("Cooking: {Payload}", payload);
+        logger.LogWarning("Cooking: {Payload}", payload);
 
         try
         {
             var config = JsonSerializer.Deserialize<YarpConfig>(payload);
             if (config is null)
             {
-                Log.Warning("Failed to deserialize payload: {Payload}", payload);
+                logger.LogWarning("Failed to deserialize payload: {Payload}", payload);
                 return;
             }
 
@@ -104,7 +108,7 @@ public class RouteConfigBackgroundService : BackgroundService
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "Failed to update route config");
+            logger.LogError(ex, "Failed to update route config");
         }
     }
 }

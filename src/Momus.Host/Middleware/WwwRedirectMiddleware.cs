@@ -1,5 +1,4 @@
-﻿using Serilog;
-using Yarp.ReverseProxy.Configuration;
+﻿using Yarp.ReverseProxy.Configuration;
 
 namespace Momus.Middleware;
 
@@ -7,17 +6,19 @@ public class WwwRedirectMiddleware
 {
     private readonly RequestDelegate next;
     private readonly IProxyConfigProvider proxyConfigProvider;
+    private readonly ILogger<WwwRedirectMiddleware> logger;
 
-    public WwwRedirectMiddleware(RequestDelegate next, IProxyConfigProvider proxyConfigProvider)
+    public WwwRedirectMiddleware(RequestDelegate next, IProxyConfigProvider proxyConfigProvider, ILogger<WwwRedirectMiddleware> logger)
     {
         this.next = next;
         this.proxyConfigProvider = proxyConfigProvider;
+        this.logger = logger;
     }
 
     public async Task InvokeAsync(HttpContext context)
     {
         var host = context.Request.Host;
-        Log.Warning("WwwRedirectMiddleware - Host: {Host}", host.Host);
+        logger.LogWarning("WwwRedirectMiddleware - Host: {Host}", host.Host);
 
         // if the host starts with www, check if there's a route that matches it
         if (host.Host.StartsWith("www.", StringComparison.OrdinalIgnoreCase))
@@ -29,7 +30,7 @@ public class WwwRedirectMiddleware
                      r.Match.Hosts.Any(x => x.Equals(nonWwwHost, StringComparison.OrdinalIgnoreCase)));
 
             if (matchedRoute == null)
-                Log.Fatal("WwwRedirectMiddleware - Matched route is null");
+                logger.LogError("WwwRedirectMiddleware - Matched route is null");
             
             // if the route has the RedirectWww metadata set to true, redirect to the non-www version
             if (matchedRoute?.Metadata != null
@@ -49,12 +50,12 @@ public class WwwRedirectMiddleware
                 if (host.Port.HasValue && host.Port != 80)
                     nonWwwUrl.Port = host.Port.Value;
 
-                Log.Warning("WwwRedirectMiddleware - Redirecting to {NonWwwUrl}", nonWwwUrl.ToString());
+                logger.LogWarning("WwwRedirectMiddleware - Redirecting to {NonWwwUrl}", nonWwwUrl.ToString());
                 context.Response.Redirect(nonWwwUrl.ToString(), permanent: true);
                 return;
             }
 
-            Log.Fatal("WwwRedirectMiddleware - No route matched the host {Host}", nonWwwHost);
+            logger.LogError("WwwRedirectMiddleware - No route matched the host {Host}", nonWwwHost);
         }
 
         await next(context);

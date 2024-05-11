@@ -1,8 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Momus", "Momus\Momus.csproj", "{7E1A61E7-1640-43F8-9D12-C29A5DEEA603}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Momus.Host", "Momus.Host\Momus.Host.csproj", "{7E1A61E7-1640-43F8-9D12-C29A5DEEA603}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Momus.ConfigUpdater", "Momus.ConfigUpdater\Momus.ConfigUpdater.csproj", "{5F4CC221-CE76-4510-A05D-4878BC05EC20}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Momus.ConfigUpdater", "..\demo\Momus.ConfigUpdater\Momus.ConfigUpdater.csproj", "{5F4CC221-CE76-4510-A05D-4878BC05EC20}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8789ABCB-1E35-44F0-9EEA-254E0903A0FC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "demo", "demo", "{0D967C3E-2358-4DF5-9579-5E462F235DAB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Momus", "Momus\Momus.csproj", "{317051B7-BE16-427B-B8DE-C4789BC5572F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,5 +24,14 @@ Global
 		{5F4CC221-CE76-4510-A05D-4878BC05EC20}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5F4CC221-CE76-4510-A05D-4878BC05EC20}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5F4CC221-CE76-4510-A05D-4878BC05EC20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{317051B7-BE16-427B-B8DE-C4789BC5572F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{317051B7-BE16-427B-B8DE-C4789BC5572F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{317051B7-BE16-427B-B8DE-C4789BC5572F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{317051B7-BE16-427B-B8DE-C4789BC5572F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7E1A61E7-1640-43F8-9D12-C29A5DEEA603} = {8789ABCB-1E35-44F0-9EEA-254E0903A0FC}
+		{5F4CC221-CE76-4510-A05D-4878BC05EC20} = {0D967C3E-2358-4DF5-9579-5E462F235DAB}
+		{317051B7-BE16-427B-B8DE-C4789BC5572F} = {8789ABCB-1E35-44F0-9EEA-254E0903A0FC}
 	EndGlobalSection
 EndGlobal
