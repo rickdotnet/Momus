@@ -26,9 +26,80 @@ Before diving into Momus, you'll need to have a running instance of `nats-server
 
 For instructions on how to set up `nats-server` with JetStream, refer to the official [NATS documentation](https://docs.nats.io/running-a-nats-service/introduction/installation).
 
-## Demo Project
+## Demo Updater
 
 To see Momus in action, refer to the `ConfigUpdater` demo project included in the repository. This project illustrates how to publish updates to the routing configuration, showcasing the dynamic nature of Momus.
+
+## Live Example: [https://devsite.in](https://devsite.in)
+
+To demonstrate Momus in action, I put a demo up at `https://devsite.in`. This section outlines the steps I took to set it up. It uses Momus, Cloudflare, and a Digital Ocean droplet.
+
+### Initial Setup
+
+1. I created a new Digital Ocean droplet, selecting the Docker option from the Marketplace to ensure Docker and Docker Compose were pre-installed.
+
+2. DNS entries were updated on Cloudflare to proxy requests to the IP address of the newly created droplet.
+
+### Deploying Momus
+
+1. SSH into the Digital Ocean droplet:
+
+   ```bash
+   ssh root@<droplet-ip-address>
+   ```
+
+2. Download the `docker-compose.yml` file from the Momus GitHub repository and deploy the services using Docker Compose:
+
+   ```bash
+   curl -sS -L https://raw.githubusercontent.com/rickdotnet/Momus/main/docker-compose.yml -o docker-compose.yml && docker compose up -d
+   ```
+
+### Configuring Routes
+
+1. To update the routing configuration, `nats-box` was used to interact with the NATS server:
+
+   ```bash
+   docker run --network root_devsite --rm -it -v $(pwd)/nsc:/nsc natsio/nats-box:latest
+   ```
+
+2. Inside the `nats-box` container, the following commands were executed to establish the NATS context and update the key-value store with the new route configuration:
+
+   ```bash
+   nats context save local --server=nats://nats:4222 --select
+   nats kv put momus route-config "{\"Routes\":[{\"RouteId\":\"1f8873f3-4106-4d57-bb69-aeebca57118d\",\"Match\":{\"Hosts\":[\"devsite.in\"],\"Path\":\"{**catch-all}\"},\"ClusterId\":\"5007c31d-e9f6-4063-89cc-a2d433065201\",\"Metadata\":{\"RedirectWww\":\"true\",\"UseOriginalHostHeader\":\"true\"}}],\"Clusters\":[{\"ClusterId\":\"5007c31d-e9f6-4063-89cc-a2d433065201\",\"Destinations\":{\"devsite\":{\"Address\":\"http://web-test:8000\"}}}]}"
+   ```
+
+   ```json
+   {
+   "Routes": [
+      {
+         "RouteId": "1f8873f3-4106-4d57-bb69-aeebca57118d",
+         "Match": {
+         "Hosts": [
+            "devsite.in"
+         ],
+         "Path": "{**catch-all}"
+         },
+         "ClusterId": "5007c31d-e9f6-4063-89cc-a2d433065201",
+         "Metadata": {
+         "RedirectWww": "true",
+         "UseOriginalHostHeader": "true"
+         }
+      }
+   ],
+   "Clusters": [
+      {
+         "ClusterId": "5007c31d-e9f6-4063-89cc-a2d433065201",
+         "Destinations": {
+         "devsite": {
+            "Address": "http://web-test:8000"
+         }
+         }
+      }
+   ]
+   }
+   ```
+   This configuration directs all traffic for `https://devsite.in` to the `web-test` service.
 
 ## License
 

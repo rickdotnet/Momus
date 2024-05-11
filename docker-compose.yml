@@ -5,6 +5,8 @@ services:
     command: -js --http_port 8222
     networks:
       - devsite
+    volumes:
+      - nats-server:/tmp/nats
 
   web-test:
     container_name: web-test
@@ -24,3 +26,6 @@ services:
 
 networks:
   devsite:
+
+volumes:
+  nats-server:
