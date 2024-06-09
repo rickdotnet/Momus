@@ -36,6 +36,7 @@ public static class Setup
                     CredsFile = builder.Configuration[nameof(MomusSettings.CredsFilePath)],
                     Jwt = builder.Configuration[nameof(MomusSettings.Jwt)],
                     NKey = builder.Configuration[nameof(MomusSettings.NKey)],
+                    Seed = builder.Configuration[nameof(MomusSettings.Seed)],
                     Token = builder.Configuration[nameof(MomusSettings.Token)],
                 }
             })

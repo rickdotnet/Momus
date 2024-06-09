@@ -8,5 +8,6 @@ public record MomusSettings
     public string? CredsFilePath { get; set; }
     public string? Jwt { get; set; }
     public string? NKey { get; set; }
+    public string? Seed { get; set; }
     public string? Token { get; set; }
 }
