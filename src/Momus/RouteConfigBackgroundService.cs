@@ -96,6 +96,7 @@ public class RouteConfigBackgroundService : BackgroundService
             foreach (var route in config.Routes)
             {
                 var originalHostMeta = route.Metadata?.GetValueOrDefault("UseOriginalHostHeader", "false") ?? "false";
+                logger.LogWarning("OriginalHostMeta: {OriginalHostMeta}", originalHostMeta);
                 if (bool.TryParse(originalHostMeta, out var useOriginalHostHeader) && useOriginalHostHeader)
                     route.WithTransformUseOriginalHostHeader();
 

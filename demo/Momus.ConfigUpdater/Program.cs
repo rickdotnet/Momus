@@ -41,4 +41,5 @@ ClusterConfig[] clusterConfigs =
     }
 ];
 
-await store.PutAsync("route-config", JsonSerializer.Serialize(new { Routes = routeConfig, Clusters = clusterConfigs }));
+var payload = JsonSerializer.Serialize(new { Routes = routeConfig, Clusters = clusterConfigs });
+await store.PutAsync("route-config", payload);
