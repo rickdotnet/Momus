@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using Momus.Config;
+using Momus.Host.Middleware;
 using Momus.Middleware;
 using NATS.Extensions.Microsoft.DependencyInjection;
 using Serilog;
@@ -22,7 +23,7 @@ public static class Setup
         app.UseSerilogRequestLogging();
         app.UseMiddleware<WwwRedirectMiddleware>();
         // need to test this again with and without cloudflare in the middle
-        //app.UseMiddleware<SchemeForwardingMiddleware>();
+        app.UseMiddleware<SchemeForwardingMiddleware>();
     }
 
     private static void ConfigureNats(this WebApplicationBuilder builder)
