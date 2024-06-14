@@ -23,7 +23,7 @@ public static class Setup
         app.UseSerilogRequestLogging();
         app.UseMiddleware<WwwRedirectMiddleware>();
         // need to test this again with and without cloudflare in the middle
-        app.UseMiddleware<SchemeForwardingMiddleware>();
+        //app.UseMiddleware<SchemeForwardingMiddleware>();
     }
 
     private static void ConfigureNats(this WebApplicationBuilder builder)
