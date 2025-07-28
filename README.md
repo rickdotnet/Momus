@@ -30,10 +30,6 @@ For instructions on how to set up `nats-server` with JetStream, refer to the off
 
 To see Momus in action, refer to the `ConfigUpdater` demo project included in the repository. This project illustrates how to publish updates to the routing configuration, showcasing the dynamic nature of Momus.
 
-## Live Example: [https://devsite.in](https://devsite.in)
-
-To demonstrate Momus in action, I put a demo up at `https://devsite.in`. This section outlines the steps I took to set it up. It uses Momus, Cloudflare, and a Digital Ocean droplet.
-
 ### Initial Setup
 
 1. I created a new Digital Ocean droplet, selecting the Docker option from the Marketplace to ensure Docker and Docker Compose were pre-installed.
