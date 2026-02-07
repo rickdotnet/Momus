@@ -1,46 +1,48 @@
-using System.Text.Json;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Momus.Cli.Interactive;
+using Momus.Cli.Services;
+using Momus.Config;
 using NATS.Client.Core;
-using NATS.Client.JetStream;
-using NATS.Client.KeyValueStore;
-using Yarp.ReverseProxy.Configuration;
 
-var config = new RouteConfig
+var homeDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+var homeConfigPath = Path.Combine(homeDir, ".momus", "momusConfig.json");
+
+var currentDir = Directory.GetCurrentDirectory();
+var currentDirConfigPath = Path.Combine(currentDir, "momusConfig.json");
+
+var configurationBuilder = new ConfigurationBuilder()
+    .AddJsonFile(homeConfigPath, optional: true)
+    .AddJsonFile(currentDirConfigPath, optional: true)
+    .AddEnvironmentVariables(prefix: "MOMUS_");
+
+var configuration = configurationBuilder.Build();
+var services = new ServiceCollection();
+
+var settings = configuration.Get<MomusSettings>() ?? new MomusSettings();
+services.AddSingleton(settings);
+
+var natsOpts = new NatsOpts
 {
-    RouteId = Guid.NewGuid().ToString(),
-    Match = new RouteMatch
+    Url = settings.NatsUrl,
+    AuthOpts = new NatsAuthOpts
     {
-        Hosts = ["rickdot.net"],
-        Path = "{**catch-all}"
-    },
-    ClusterId = Guid.NewGuid().ToString(),
-    Metadata = new Dictionary<string, string>(
-        [
-            new("RedirectWww", "true"), // default?
-            new("UseOriginalHostHeader", "true")
-        ]
-    )
+        Username = settings.User,
+        Password = settings.Pass,
+        Token = settings.Token
+    }
 };
 
-await using var nats = new NatsConnection();
-var js = new NatsJSContext(nats);
-var kv = new NatsKVContext(js);
-var store = await kv.CreateStoreAsync("momus");
+var natsConnection = new NatsConnection(natsOpts);
+await natsConnection.ConnectAsync();
 
-RouteConfig[] routeConfig = [config];
-ClusterConfig[] clusterConfigs =
-[
-    new()
-    {
-        ClusterId = config.ClusterId,
-        Destinations = new Dictionary<string, DestinationConfig>
-        {
-            ["rickdot"] = new()
-            {
-                Address = "http://cloud-app-ricknet:8080"
-            }
-        }
-    }
-];
+services.AddSingleton(natsConnection);
 
-var payload = JsonSerializer.Serialize(new { Routes = routeConfig, Clusters = clusterConfigs });
-await store.PutAsync("route-config", payload);
+services.AddSingleton<IRouteConfigService, RouteConfigService>();
+services.AddSingleton<InteractiveApp>();
+
+var serviceProvider = services.BuildServiceProvider();
+
+// Launch interactive mode
+var app = serviceProvider.GetRequiredService<InteractiveApp>();
+await app.RunAsync();
