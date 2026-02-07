@@ -22,7 +22,16 @@ The architecture of Momus is such that it subscribes to a NATS KeyValue store, w
 
 ## Prerequisites
 
-Before diving into Momus, you'll need to have a running instance of `nats-server` with JetStream enabled. This is neccessary for Momus to function, as it relies on NATS for dynamic configuration updates.
+- **.NET 10.0 SDK**: Required for building and running Momus projects
+- **NATS Server with JetStream**: Required for dynamic configuration updates
+- **Redis Server (Optional)**: For persistent KV storage configuration
+- **Docker**: For containerized deployment
+
+### .NET Requirements
+
+- Target Framework: .NET 10.0
+- Compatible with latest .NET 10 runtime features
+- Previous .NET 8 projects have been upgraded to .NET 10
 
 For instructions on how to set up `nats-server` with JetStream, refer to the official [NATS documentation](https://docs.nats.io/running-a-nats-service/introduction/installation).
 

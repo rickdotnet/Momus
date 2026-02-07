@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using NATS.Client.Core;
 using NATS.Client.JetStream;
 using NATS.Client.KeyValueStore;
@@ -13,11 +13,12 @@ var config = new RouteConfig
         Path = "{**catch-all}"
     },
     ClusterId = Guid.NewGuid().ToString(),
-    Metadata = new Dictionary<string, string>(new KeyValuePair<string, string>[]
-    {
-        new("RedirectWww", "true"), // default?
-        new("UseOriginalHostHeader", "true")
-    })
+    Metadata = new Dictionary<string, string>(
+        [
+            new("RedirectWww", "true"), // default?
+            new("UseOriginalHostHeader", "true")
+        ]
+    )
 };
 
 await using var nats = new NatsConnection();
@@ -28,7 +29,7 @@ var store = await kv.CreateStoreAsync("momus");
 RouteConfig[] routeConfig = [config];
 ClusterConfig[] clusterConfigs =
 [
-    new ClusterConfig
+    new()
     {
         ClusterId = config.ClusterId,
         Destinations = new Dictionary<string, DestinationConfig>
