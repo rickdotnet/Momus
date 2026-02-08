@@ -35,6 +35,7 @@ public static class Setup
                     .Configure(opts => opts.Opts = opts.Opts with
                         {
                             Url = builder.Configuration[nameof(MomusSettings.NatsUrl)] ?? opts.Opts.Url,
+                            InboxPrefix = builder.Configuration[nameof(MomusSettings.User)] ?? Guid.NewGuid().ToString()[..8],
                             AuthOpts = new NatsAuthOpts
                             {
                                 Username = builder.Configuration[nameof(MomusSettings.User)],
