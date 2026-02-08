@@ -30,13 +30,11 @@ public static class Setup
     {
         private void ConfigureNats()
         {
-            builder.Services.AddNatsClient(nats => nats.ConfigureOptions(optsBuilder =>
-                {
-                    optsBuilder.Configure(natsOpts =>
-                    {
-                        natsOpts.Opts = new NatsOpts
+            builder.Services.AddNatsClient(nats => nats
+                .ConfigureOptions(optsBuilder => optsBuilder
+                    .Configure(opts => opts.Opts = opts.Opts with
                         {
-                            Url = builder.Configuration[nameof(MomusSettings.NatsUrl)] ?? natsOpts.Opts.Url,
+                            Url = builder.Configuration[nameof(MomusSettings.NatsUrl)] ?? opts.Opts.Url,
                             AuthOpts = new NatsAuthOpts
                             {
                                 CredsFile = builder.Configuration[nameof(MomusSettings.CredsFilePath)],
@@ -45,9 +43,9 @@ public static class Setup
                                 Seed = builder.Configuration[nameof(MomusSettings.Seed)],
                                 Token = builder.Configuration[nameof(MomusSettings.Token)],
                             }
-                        };
-                    });
-                })
+                        }
+                    )
+                )
             );
 
             builder.Services.AddHostedService<RouteConfigBackgroundService>();
