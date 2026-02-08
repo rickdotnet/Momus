@@ -1,0 +1,123 @@
+{
+  "Routes": [
+    {
+      "RouteId": "4e027949",
+      "Match": {
+        "Hosts": [
+          "i-am.gay"
+        ],
+        "Path": "{**catch-all}"
+      },
+      "ClusterId": "4e027949",
+      "Metadata": {
+        "RedirectWww": "true"
+      }
+    },
+    {
+      "RouteId": "ddd58a0a",
+      "Match": {
+        "Path": "{**catch-all}"
+      },
+      "ClusterId": "ddd58a0a",
+      "Metadata": {
+        "RedirectWww": "true"
+      }
+    },
+    {
+      "RouteId": "db135131",
+      "Match": {
+        "Hosts": [
+          "rick.gg"
+        ],
+        "Path": "{**catch-all}"
+      },
+      "ClusterId": "db135131",
+      "Metadata": {
+        "RedirectWww": "true"
+      }
+    },
+    {
+      "RouteId": "b8db66db",
+      "Match": {
+        "Hosts": [
+          "search.rick.gg"
+        ],
+        "Path": "{**catch-all}"
+      },
+      "ClusterId": "b8db66db"
+    },
+    {
+      "RouteId": "b3bf52e9",
+      "Match": {
+        "Hosts": [
+          "192.187.96.250"
+        ],
+        "Path": "{**catch-all}"
+      },
+      "ClusterId": "b3bf52e9"
+    },
+    {
+      "RouteId": "ed202b40",
+      "Match": {
+        "Hosts": [
+          "rhinostack.com"
+        ],
+        "Path": "{**catch-all}"
+      },
+      "ClusterId": "ed202b40",
+      "Metadata": {
+        "RedirectWww": "true"
+      }
+    }
+  ],
+  "Clusters": [
+    {
+      "ClusterId": "4e027949",
+      "Destinations": {
+        "dest1": {
+          "Address": "http://bigpi:3002"
+        }
+      }
+    },
+    {
+      "ClusterId": "ddd58a0a",
+      "Destinations": {
+        "dest1": {
+          "Address": "http://localhost:8040"
+        }
+      }
+    },
+    {
+      "ClusterId": "db135131",
+      "Destinations": {
+        "dest1": {
+          "Address": "http://bigpi:8043"
+        }
+      }
+    },
+    {
+      "ClusterId": "b8db66db",
+      "Destinations": {
+        "dest1": {
+          "Address": "http://localhost:8080"
+        }
+      }
+    },
+    {
+      "ClusterId": "b3bf52e9",
+      "Destinations": {
+        "dest1": {
+          "Address": "http://localhost:3000"
+        }
+      }
+    },
+    {
+      "ClusterId": "ed202b40",
+      "Destinations": {
+        "dest1": {
+          "Address": "http://bigpi:8050"
+        }
+      }
+    }
+  ]
+}
