@@ -37,6 +37,8 @@ public static class Setup
                             Url = builder.Configuration[nameof(MomusSettings.NatsUrl)] ?? opts.Opts.Url,
                             AuthOpts = new NatsAuthOpts
                             {
+                                Username = builder.Configuration[nameof(MomusSettings.User)],
+                                Password = builder.Configuration[nameof(MomusSettings.Pass)],
                                 CredsFile = builder.Configuration[nameof(MomusSettings.CredsFilePath)],
                                 Jwt = builder.Configuration[nameof(MomusSettings.Jwt)],
                                 NKey = builder.Configuration[nameof(MomusSettings.NKey)],
